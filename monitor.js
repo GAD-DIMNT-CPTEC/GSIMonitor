@@ -63,6 +63,8 @@ init_doc()
 # 22 jun 2023 - J. G. de Mattos - Initial Version
 #
 # !REMARKS:
+# Run the folowing command after updating this script:
+# panel convert monitor.py --to pyodide-worker --out .
 #
 #EOP
 #-----------------------------------------------------------------------------#
@@ -115,7 +117,7 @@ class MonitoringApp:
         
     def load_data(self):
         try:
-            self.download_file("https://raw.githubusercontent.com/GAD-DIMNT-CPTEC/GSIMonitor/main/costFile_Oper.db")           
+            self.download_file("https://raw.githubusercontent.com/GAD-DIMNT-CPTEC/GSIMonitor/main/data/costFile_Oper.db")           
             con = sqlite3.connect("costFile_Oper.db")
             self.df = pd.read_sql_query("select * from costCons order by date", con, parse_dates=["date"], index_col='date')
             self.df.replace(-1e38,np.nan)
