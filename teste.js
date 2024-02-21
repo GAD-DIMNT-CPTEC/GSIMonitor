@@ -15,7 +15,7 @@ async function startApplication() {
   self.pyodide.globals.set("sendPatch", sendPatch);
   console.log("Loaded!");
   await self.pyodide.loadPackage("micropip");
-  const env_spec = ['https://cdn.holoviz.org/panel/wheels/bokeh-3.3.4-py3-none-any.whl', 'https://cdn.holoviz.org/panel/1.3.8/dist/wheels/panel-1.3.8-py3-none-any.whl', 'pyodide-http==0.2.1', 'holoviews', 'hvplot', 'numpy', 'pandas', 'requests', 'https://files.pythonhosted.org/packages/61/ac/aa37ff2b58429d5cd2470d19ec9b8662eeed1ae3dd02f4d85508dc0d8d88/pysqlite3_wheels-0.5.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl']
+  const env_spec = ['https://cdn.holoviz.org/panel/wheels/bokeh-3.3.4-py3-none-any.whl', 'https://cdn.holoviz.org/panel/1.3.8/dist/wheels/panel-1.3.8-py3-none-any.whl', 'pyodide-http==0.2.1', 'holoviews', 'hvplot', 'numpy', 'pandas', 'requests', 'https://files.pythonhosted.org/packages/19/c5/7e5257b54c293ec97276f59ce5c5f5064179cbc53ed159f528668063eebe/pysqlite3_wheels-0.5.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl']
   for (const pkg of env_spec) {
     let pkg_name;
     if (pkg.endsWith('.whl')) {
