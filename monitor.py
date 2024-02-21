@@ -28,6 +28,8 @@ import panel as pn
 import holoviews as hv
 import hvplot.pandas
 from bokeh.models.formatters import DatetimeTickFormatter
+import os
+import requests
 
 class MonitoringApp:
     def __init__(self):
@@ -53,9 +55,18 @@ class MonitoringApp:
         self.load_data()
         self.create_widgets()
         self.create_layout()
+
+    def download_file(self,path):
+        self.r = requests.get(path)
+        self.filename = path.split("/")[-1]
+        self.fullname = str(os.getcwd())+"/"+self.filename
+    
+        with open(self.fullname, 'wb') as f:
+            f.write(self.r.content)
         
     def load_data(self):
         try:
+            self.download_file("https://raw.githubusercontent.com/GAD-DIMNT-CPTEC/GSIMonitor/main/costFile_Oper.db")           
             con = sqlite3.connect("costFile_Oper.db")
             self.df = pd.read_sql_query("select * from costCons order by date", con, parse_dates=["date"], index_col='date')
             self.df.replace(-1e38,np.nan)
@@ -73,11 +84,11 @@ class MonitoringApp:
         
     def create_widgets(self):
         # Widgets do Panel
-        self.Hour = pn.widgets.RadioBoxGroup(name="Hour Cycle", options=self.df.hour.unique().tolist(), inline=True)
-        self.Outer = pn.widgets.RadioBoxGroup(name="Outer Loop", options=self.df.outer.unique().tolist(), inline=True)
-        self.Vars = pn.widgets.Select(name='Variables', options=self.df.keys()[2:].tolist(), inline=True)
-        self.use_mean = pn.widgets.Switch(name='Monthly Mean', inline=True)
-        self.column_name = pn.widgets.Select(name='Column to Plot', options=self.dc.columns.tolist()[3:], inline=True)
+        self.Hour = pn.widgets.RadioBoxGroup(name="Hour Cycle", options=self.df.hour.unique().tolist())#, inline=True)
+        self.Outer = pn.widgets.RadioBoxGroup(name="Outer Loop", options=self.df.outer.unique().tolist())#, inline=True)
+        self.Vars = pn.widgets.Select(name='Variables', options=self.df.keys()[2:].tolist())#, inline=True)
+        self.use_mean = pn.widgets.Switch(name='Monthly Mean')#, inline=True)
+        self.column_name = pn.widgets.Select(name='Column to Plot', options=self.dc.columns.tolist()[3:])#, inline=True)
         
         # Widget para selecionar a data e a hora
         self.date_time_picker = pn.widgets.DatetimePicker(
@@ -273,6 +284,7 @@ class MonitoringApp:
     def run(self):
         # Servir a aplicação
         self.app.servable()
+        #self.app.show()
 
 #print('name:',__name__)
 #if __name__ == "__main__":

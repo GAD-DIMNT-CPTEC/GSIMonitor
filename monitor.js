@@ -1,4 +1,4 @@
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js");
 
 function sendPatch(patch, buffers, msg_id) {
   self.postMessage({
@@ -15,8 +15,7 @@ async function startApplication() {
   self.pyodide.globals.set("sendPatch", sendPatch);
   console.log("Loaded!");
   await self.pyodide.loadPackage("micropip");
-  await self.pyodide.loadPackage("sqlite3");
-  const env_spec = ['markdown-it-py<3', 'https://cdn.holoviz.org/panel/1.1.1/dist/wheels/bokeh-3.1.1-py3-none-any.whl', 'https://cdn.holoviz.org/panel/1.1.1/dist/wheels/panel-1.1.1-py3-none-any.whl', 'pyodide-http==0.2.1', 'holoviews', 'hvplot', 'numpy', 'pandas==1.5.3']
+  const env_spec = ['https://cdn.holoviz.org/panel/wheels/bokeh-3.3.4-py3-none-any.whl', 'https://cdn.holoviz.org/panel/1.3.8/dist/wheels/panel-1.3.8-py3-none-any.whl', 'pyodide-http==0.2.1', 'holoviews', 'hvplot', 'numpy', 'pandas', 'requests', 'sqlite3']
   for (const pkg of env_spec) {
     let pkg_name;
     if (pkg.endsWith('.whl')) {
@@ -78,6 +77,8 @@ import panel as pn
 import holoviews as hv
 import hvplot.pandas
 from bokeh.models.formatters import DatetimeTickFormatter
+import os
+import requests
 
 class MonitoringApp:
     def __init__(self):
@@ -103,9 +104,18 @@ class MonitoringApp:
         self.load_data()
         self.create_widgets()
         self.create_layout()
+
+    def download_file(self,path):
+        self.r = requests.get(path)
+        self.filename = path.split("/")[-1]
+        self.fullname = str(os.getcwd())+"/"+self.filename
+    
+        with open(self.fullname, 'wb') as f:
+            f.write(self.r.content)
         
     def load_data(self):
         try:
+            self.download_file("https://raw.githubusercontent.com/GAD-DIMNT-CPTEC/GSIMonitor/main/costFile_Oper.db")           
             con = sqlite3.connect("costFile_Oper.db")
             self.df = pd.read_sql_query("select * from costCons order by date", con, parse_dates=["date"], index_col='date')
             self.df.replace(-1e38,np.nan)
@@ -123,11 +133,11 @@ class MonitoringApp:
         
     def create_widgets(self):
         # Widgets do Panel
-        self.Hour = pn.widgets.RadioBoxGroup(name="Hour Cycle", options=self.df.hour.unique().tolist(), inline=True)
-        self.Outer = pn.widgets.RadioBoxGroup(name="Outer Loop", options=self.df.outer.unique().tolist(), inline=True)
-        self.Vars = pn.widgets.Select(name='Variables', options=self.df.keys()[2:].tolist(), inline=True)
-        self.use_mean = pn.widgets.Switch(name='Monthly Mean', inline=True)
-        self.column_name = pn.widgets.Select(name='Column to Plot', options=self.dc.columns.tolist()[3:], inline=True)
+        self.Hour = pn.widgets.RadioBoxGroup(name="Hour Cycle", options=self.df.hour.unique().tolist())#, inline=True)
+        self.Outer = pn.widgets.RadioBoxGroup(name="Outer Loop", options=self.df.outer.unique().tolist())#, inline=True)
+        self.Vars = pn.widgets.Select(name='Variables', options=self.df.keys()[2:].tolist())#, inline=True)
+        self.use_mean = pn.widgets.Switch(name='Monthly Mean')#, inline=True)
+        self.column_name = pn.widgets.Select(name='Column to Plot', options=self.dc.columns.tolist()[3:])#, inline=True)
         
         # Widget para selecionar a data e a hora
         self.date_time_picker = pn.widgets.DatetimePicker(
@@ -323,6 +333,7 @@ class MonitoringApp:
     def run(self):
         # Servir a aplicação
         self.app.servable()
+        #self.app.show()
 
 #print('name:',__name__)
 #if __name__ == "__main__":
