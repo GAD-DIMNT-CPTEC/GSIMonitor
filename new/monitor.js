@@ -15,7 +15,7 @@ async function startApplication() {
   self.pyodide.globals.set("sendPatch", sendPatch);
   console.log("Loaded!");
   await self.pyodide.loadPackage("micropip");
-  const env_spec = ['https://cdn.holoviz.org/panel/wheels/bokeh-3.3.4-py3-none-any.whl', 'https://cdn.holoviz.org/panel/1.3.8/dist/wheels/panel-1.3.8-py3-none-any.whl', 'pyodide-http==0.2.1', 'monitor_armobs', 'monitor_jo', 'monitor_mass', 'holoviews', 'hvplot', 'numpy', 'pandas', 'requests' 'sqlite3']
+  const env_spec = ['https://cdn.holoviz.org/panel/wheels/bokeh-3.3.4-py3-none-any.whl', 'https://cdn.holoviz.org/panel/1.3.8/dist/wheels/panel-1.3.8-py3-none-any.whl', 'pyodide-http==0.2.1', 'monitor_jo', 'monitor_mass', 'holoviews', 'hvplot', 'numpy', 'pandas', 'requests', 'sqlite3']
   for (const pkg of env_spec) {
     let pkg_name;
     if (pkg.endsWith('.whl')) {
@@ -53,7 +53,7 @@ import panel as pn
 
 from monitor_jo import monitor_jo_sidebar, monitor_jo_main
 from monitor_mass import MonitoringAppMass
-from monitor_armobs import monitor_armobs_sidebar, monitor_armobs_main
+#from monitor_armobs import monitor_armobs_sidebar, monitor_armobs_main
 
 monitoring_app_mass = MonitoringAppMass()
 monitor_mass_sidebar = monitoring_app_mass.LayoutSidebar()
@@ -71,20 +71,20 @@ class MonitoringApp:
 
         self.tab2 = pn.Column(monitor_mass_main, sizing_mode="stretch_both")   
 
-        self.tab3 = pn.Column(monitor_armobs_main, sizing_mode="stretch_both")   
+#        self.tab3 = pn.Column(monitor_armobs_main, sizing_mode="stretch_both")   
         
         # Conteúdo da aplicação
         tabs = pn.Tabs(dynamic=True, active=0)
         tabs.append(("Minimization Plots", self.tab1))
         tabs.append(("Constrains", self.tab2))
-        tabs.append(("ArmObs", self.tab3))
+#        tabs.append(("ArmObs", self.tab3))
 
         # Layout da barra lateral
         sidebar_jo = pn.Column(monitor_jo_sidebar())
         
         sidebar_mass = pn.Column(monitor_mass_sidebar)
 
-        sidebar_armobs = pn.Column(monitor_armobs_sidebar)
+#        sidebar_armobs = pn.Column(monitor_armobs_sidebar)
 
         col = pn.Column(sidebar_jo)
         
@@ -94,8 +94,8 @@ class MonitoringApp:
                 col[0] = sidebar_jo
             elif active_tab == 1:
                 col[0] = sidebar_mass
-            elif active_tab == 2:
-                col[0] = sidebar_armobs
+#            elif active_tab == 2:
+#                col[0] = sidebar_armobs
     
 
         self.app = pn.template.FastListTemplate(
