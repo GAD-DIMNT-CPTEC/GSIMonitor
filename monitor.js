@@ -107,18 +107,18 @@ class MonitoringApp:
         self.create_widgets()
         self.create_layout()
 
-#    def download_file(self,path):
-#        self.r = requests.get(path)
-#        self.filename = path.split("/")[-1]
-#        self.fullname = str(os.getcwd())+"/"+self.filename
-#    
-#        with open(self.fullname, 'wb') as f:
-#            f.write(self.r.content)
+    def download_file(self,path):
+        self.r = requests.get(path)
+        self.filename = path.split("/")[-1]
+        self.fullname = str(os.getcwd())+"/"+self.filename
+    
+        with open(self.fullname, 'wb') as f:
+            f.write(self.r.content)
         
     def load_data(self):
         try:
-#            self.download_file("https://raw.githubusercontent.com/GAD-DIMNT-CPTEC/GSIMonitor/main/data/costFile_Oper.db")           
-            con = sqlite3.connect("data/costFile_Oper.db")
+            self.download_file("https://raw.githubusercontent.com/GAD-DIMNT-CPTEC/GSIMonitor/main/data/costFile_Oper.db")           
+            con = sqlite3.connect("costFile_Oper.db")
             self.df = pd.read_sql_query("select * from costCons order by date", con, parse_dates=["date"], index_col='date')
             self.df.replace(-1e38,np.nan)
             self.dc = pd.read_sql_query("select * from costFunc order by date", con, parse_dates=["date"], index_col='date')
